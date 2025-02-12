@@ -13,6 +13,8 @@
     "@reduxjs/toolkit": "^2.5.1",
     "antd-mobile": "^5.38.1",
     "antd-mobile-icons": "^0.3.0",
+    "plotly.js-dist": "^3.0.0",
+    "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-kakao-maps-sdk": "^1.1.27",

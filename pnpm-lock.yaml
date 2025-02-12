@@ -21,6 +21,12 @@ importers:
       antd-mobile-icons:
         specifier: ^0.3.0
         version: 0.3.0
+      plotly.js-dist:
+        specifier: ^3.0.0
+        version: 3.0.0
+      prop-types:
+        specifier: ^15.8.1
+        version: 15.8.1
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2166,6 +2172,9 @@ packages:
   picomatch@4.0.2:
     resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
     engines: {node: '>=12'}
+
+  plotly.js-dist@3.0.0:
+    resolution: {integrity: sha512-CNr8bcGVOOjCqMD1t4KWy+7ikJOuxCK1nR0TRAmlKwz6tu+1oM0JlWgmRlRYlSgpqLJyEIvqNaO/Ajr268fmPw==}
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -5105,6 +5114,8 @@ snapshots:
   picomatch@2.3.1: {}
 
   picomatch@4.0.2: {}
+
+  plotly.js-dist@3.0.0: {}
 
   possible-typed-array-names@1.1.0: {}
 
