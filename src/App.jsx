@@ -1,39 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import appLogo from '/favicon.svg'
-import PWABadge from './PWABadge.jsx'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import MainLayout from './layouts/MainLayout'
+import Home from './pages/Home'
+import Details from './pages/Details'
+import Map from './pages/Map'
+import MyPage from './pages/MyPage'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={appLogo} className="logo" alt="my-react-app logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>my-react-app</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <button onClick={() => setCount((count) => count - 1)}>
-          -
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <PWABadge />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Navigate to="/home" replace />} />
+          <Route path="home" element={<Home />} />
+          <Route path="details" element={<Details />} />
+          <Route path="map" element={<Map />} />
+          <Route path="my" element={<MyPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
