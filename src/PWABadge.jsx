@@ -33,6 +33,11 @@ function PWABadge() {
     setNeedRefresh(false)
   }
 
+  // 아무것도 렌더링하지 않도록 null을 반환
+  return null;
+
+  // 아래 기존 return 문을 제거 또는 주석 처리
+  /*
   return (
     <div className="PWABadge" role="alert" aria-labelledby="toast-message">
       { (offlineReady || needRefresh)
@@ -51,6 +56,7 @@ function PWABadge() {
       )}
     </div>
   )
+  */
 }
 
 export default PWABadge
