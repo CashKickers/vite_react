@@ -11,54 +11,53 @@ export default defineConfig({
     injectRegister: false,
 
     pwaAssets: {
-      disabled: false,
-      config: true,
+      disabled: true,
     },
 
     manifest: {
-      name: 'my-react-app',
-      short_name: 'my-react-app',
-      description: 'react-pwa-webapp',
+      name: 'Rising Restaurant',
+      short_name: 'RR',
+      description: 'Rising Restaurant',
       theme_color: '#ffffff',
       icons: [
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x48.png',
+          src: '/pwa-icon/maskable_icon_x48.png',
           sizes: '48x48',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x72.png',
+          src: '/pwa-icon/maskable_icon_x72.png',
           sizes: '72x72',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x96.png',
+          src: '/pwa-icon/maskable_icon_x96.png',
           sizes: '96x96',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x128.png',
+          src: '/pwa-icon/maskable_icon_x128.png',
           sizes: '128x128',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x192.png',
+          src: '/pwa-icon/maskable_icon_x192.png',
           sizes: '192x192',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x384.png',
+          src: '/pwa-icon/maskable_icon_x384.png',
           sizes: '384x384',
           type: 'image/png',
           purpose: 'maskable'
         },
         {
-          src: 'src/assets/pwa-icon/maskable_icon_x512.png',
+          src: '/pwa-icon/maskable_icon_x512.png',
           sizes: '512x512',
           type: 'image/png',
           purpose: 'maskable'
