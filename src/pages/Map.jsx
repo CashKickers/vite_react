@@ -1,5 +1,9 @@
-import { Map } from "react-kakao-maps-sdk"
+import { Map, MapMarker } from "react-kakao-maps-sdk"
 import { useState, useEffect } from "react"
+
+import markerUpIcon from '../assets/marker-up.svg'
+import markerCommonIcon from '../assets/marker-common.svg'
+import markerDownIcon from '../assets/marker-down.svg'
 
 const KakaoMap = () => {
   const [result, setResult] = useState("")
@@ -32,7 +36,7 @@ const KakaoMap = () => {
   const handleBoundsChanged = (map) => {
     const newBounds = map.getBounds()
     setBounds(newBounds)
-    console.log("지도 영역 변경됨:", newBounds)
+    console.log("지도 영역 변경됨:", bounds)
   }
 
   // 지도가 생성된 후 실행
@@ -65,7 +69,23 @@ const KakaoMap = () => {
         gestureEnable={true}
         onCreate={setMap} // 지도가 생성되면 state에 저장
         onBoundsChanged={handleBoundsChanged} // 지도 이동 시 bounds 값 갱신
-      />
+      >
+        {/* api에서 불러온 값을 아래와 같이 표현 / 변수명.map(position => { .. }) 이용 */}
+        <MapMarker
+          position={{
+            // 마커가 표시될 위치
+            lat: center.lat,
+            lng: center.lng,
+          }}
+          image={{
+            src: markerUpIcon,
+            size: {
+              width: 44,
+              height: 52,
+            }, // 마커이미지의 크기
+          }}
+        />
+      </Map>
     </div>
   )
 }
