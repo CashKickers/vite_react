@@ -1,11 +1,14 @@
 import { Map, MapMarker } from "react-kakao-maps-sdk"
 import { useState, useEffect } from "react"
+import { Input, Button } from 'antd-mobile'
 
 import Modal from "../components/Modal"
 
 import markerUpIcon from '../assets/marker-up.svg'
 import markerCommonIcon from '../assets/marker-common.svg'
 import markerDownIcon from '../assets/marker-down.svg'
+
+import '../styles/global.css'
 
 const KakaoMap = () => {
   const [result, setResult] = useState("")
@@ -19,6 +22,8 @@ const KakaoMap = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false) // 식당 간략 정보 모달 오픈 유무
   const [restaurantId, setRestaurantId] = useState(null)
+
+  const [isResearchBtnShow, setIsResearchBtnShow] = useState(false) // 이 지역 재검색 버튼 show 유무
 
   // 현재 위치 가져오기
   useEffect(() => {
@@ -66,9 +71,22 @@ const KakaoMap = () => {
     setIsModalOpen(true)
     setRestaurantId(1); // api 불러오는 것에 따라 다르게 설정
   }
+  
+  // setIsResearchBtnShow(ture) 할 로직 구현
+  // map-research-btn 클릭 시 로직 구현 -> api 불러서 마커 새로 뿌려야함 & setIsResearchBtnShow(false)
 
   return (
     <div className="map-container">
+      <Input className="map-search" placeholder="식당명 검색" />
+      {
+        isResearchBtnShow ? (
+          <Button
+            block
+            shape='rounded'
+            className='map-research-btn'
+          >이 지역 재검색</Button>
+        ) : null
+      }
       <Map 
         id="map"
         center={center}
