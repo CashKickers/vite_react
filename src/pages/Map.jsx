@@ -1,6 +1,8 @@
 import { Map, MapMarker } from "react-kakao-maps-sdk"
 import { useState, useEffect } from "react"
 
+import Modal from "../components/Modal"
+
 import markerUpIcon from '../assets/marker-up.svg'
 import markerCommonIcon from '../assets/marker-common.svg'
 import markerDownIcon from '../assets/marker-down.svg'
@@ -14,6 +16,9 @@ const KakaoMap = () => {
 
   const [map, setMap] = useState(null) // 지도 객체 저장
   const [bounds, setBounds] = useState(null) // 지도 영역 정보 저장
+
+  const [isModalOpen, setIsModalOpen] = useState(false) // 식당 간략 정보 모달 오픈 유무
+  const [restaurantId, setRestaurantId] = useState(null)
 
   // 현재 위치 가져오기
   useEffect(() => {
@@ -52,6 +57,16 @@ const KakaoMap = () => {
     console.log("현재 지도 영역: ", bounds);
   }, [map])
 
+  // 식당 간략 정보 모달 관련 함수
+  const onCloseModal = () => {
+    setIsModalOpen(false)
+    setRestaurantId(null)
+  }
+  const onClickMarker = () => {
+    setIsModalOpen(true)
+    setRestaurantId(1); // api 불러오는 것에 따라 다르게 설정
+  }
+
   return (
     <div className="map-container">
       <Map 
@@ -70,6 +85,7 @@ const KakaoMap = () => {
         onCreate={setMap} // 지도가 생성되면 state에 저장
         onBoundsChanged={handleBoundsChanged} // 지도 이동 시 bounds 값 갱신
       >
+        <Modal isOpen={isModalOpen} onClose={onCloseModal} id={restaurantId} />
         {/* api에서 불러온 값을 아래와 같이 표현 / 변수명.map(position => { .. }) 이용 */}
         <MapMarker
           position={{
@@ -84,6 +100,8 @@ const KakaoMap = () => {
               height: 52,
             }, // 마커이미지의 크기
           }}
+          clickable={true} // 마커를 클릭 시, 지도의 클릭 이벤트가 발생 않게 함
+          onClick={onClickMarker}
         />
       </Map>
     </div>
