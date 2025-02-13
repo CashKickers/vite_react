@@ -1,4 +1,4 @@
-import { Map, MapMarker } from "react-kakao-maps-sdk"
+import { Map, MapMarker, MarkerClusterer } from "react-kakao-maps-sdk"
 import { useState, useEffect } from "react"
 import { Input, Button } from 'antd-mobile'
 
@@ -24,6 +24,9 @@ const KakaoMap = () => {
   const [restaurantId, setRestaurantId] = useState(null)
 
   const [isResearchBtnShow, setIsResearchBtnShow] = useState(false) // 이 지역 재검색 버튼 show 유무
+
+  const [markers, setMarkers] = useState([]) // marker 정보 저장
+                                             // lat, lng, type, id (식당 아이디) 저장 필요
 
   // 현재 위치 가져오기
   useEffect(() => {
@@ -67,9 +70,9 @@ const KakaoMap = () => {
     setIsModalOpen(false)
     setRestaurantId(null)
   }
-  const onClickMarker = () => {
+  const onClickMarker = (id) => {
     setIsModalOpen(true)
-    setRestaurantId(1); // api 불러오는 것에 따라 다르게 설정
+    setRestaurantId(id); // api 불러오는 것에 따라 다르게 설정
   }
   
   // setIsResearchBtnShow(ture) 할 로직 구현
@@ -104,23 +107,29 @@ const KakaoMap = () => {
         onBoundsChanged={handleBoundsChanged} // 지도 이동 시 bounds 값 갱신
       >
         <Modal isOpen={isModalOpen} onClose={onCloseModal} id={restaurantId} />
-        {/* api에서 불러온 값을 아래와 같이 표현 / 변수명.map(position => { .. }) 이용 */}
-        <MapMarker
-          position={{
-            // 마커가 표시될 위치
-            lat: center.lat,
-            lng: center.lng,
-          }}
-          image={{
-            src: markerUpIcon,
-            size: {
-              width: 44,
-              height: 52,
-            }, // 마커이미지의 크기
-          }}
-          clickable={true} // 마커를 클릭 시, 지도의 클릭 이벤트가 발생 않게 함
-          onClick={onClickMarker}
-        />
+        <MarkerClusterer
+          averageCenter={true} // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+          minLevel={10} // 클러스터 할 최소 지도 레벨 -> 수정
+        >
+          {/* api에서 불러온 값을 아래와 같이 표현 / markers.map(mark => { .. }) 이용 */}
+          <MapMarker
+            // key={mark.id}
+            position={{
+              // 마커가 표시될 위치
+              lat: center.lat, // mark.lat
+              lng: center.lng, // mark.lng
+            }}
+            image={{
+              src: markerUpIcon, // mark.type에 따라 다른 아이콘 설정
+              size: {
+                width: 44,
+                height: 52,
+              }, // 마커이미지의 크기
+            }}
+            clickable={true} // 마커를 클릭 시, 지도의 클릭 이벤트가 발생 않게 함
+            onClick={id => onClickMarker(id)}
+          />
+        </MarkerClusterer>
       </Map>
     </div>
   )
