@@ -15,7 +15,7 @@ const MyButton = ( { setState = false } ) => { // 식당 id 값도 api 연결 �
     
     return (
         <div onClick={mySelected}>
-            {selected ? (<Image src={mySvg} width={40} />) : (<Image src={notMySvg} width={40} />)}
+            {selected ? (<Image src={mySvg} width={30} />) : (<Image src={notMySvg} width={30} />)}
         </div>
     )
 }

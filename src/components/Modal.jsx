@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import { Button, Image } from 'antd-mobile'
 
+import MyButton from './MyButton'
+
 import '../styles/global.css'
 import '../styles/modal.css'
 
@@ -18,8 +20,8 @@ const Modal = ( { isOpen, onClose, id, } ) => {
                     <div className="modal-header">
                         <div className="modal-header-info">
                             <div className="modal-header-name">
-                                <div>광화문 한옥집</div>
-                                {/* My-button 버튼 */}
+                                <div style={{paddingRight: "7px"}}>광화문 한옥집</div>
+                                <MyButton />
                             </div>
                             <Image src={modalClose} width="50px" onClick={onClose} />
                         </div>
