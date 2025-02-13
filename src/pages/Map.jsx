@@ -8,6 +8,9 @@ const KakaoMap = () => {
     lng: 126.570667,
   })
 
+  const [map, setMap] = useState(null) // 지도 객체 저장
+  const [bounds, setBounds] = useState(null) // 지도 영역 정보 저장
+
   // 현재 위치 가져오기
   useEffect(() => {
     if (navigator.geolocation) {
@@ -25,6 +28,26 @@ const KakaoMap = () => {
     }
   }, [])
 
+  // 지도 이동 시 getBounds() 호출
+  const handleBoundsChanged = (map) => {
+    const newBounds = map.getBounds()
+    setBounds(newBounds)
+    console.log("지도 영역 변경됨:", newBounds)
+  }
+
+  // 지도가 생성된 후 실행
+  useEffect(()=> {
+    if (!map) return
+
+    // 지도 객체가 존재하면 getBounds 호출 가능
+    if (!map) return
+
+    // 지도의 현재 영역
+    const bounds = map.getBounds()
+    setBounds(bounds)
+    console.log("현재 지도 영역: ", bounds);
+  }, [map])
+
   return (
     <div className="map-container">
       <Map 
@@ -40,6 +63,8 @@ const KakaoMap = () => {
         disableDoubleClick={true}
         disableDoubleClickZoom={true}
         gestureEnable={true}
+        onCreate={setMap} // 지도가 생성되면 state에 저장
+        onBoundsChanged={handleBoundsChanged} // 지도 이동 시 bounds 값 갱신
       />
     </div>
   )
