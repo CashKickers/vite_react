@@ -5,14 +5,15 @@
     max-height: 668px;
 
     border-radius: 50px;
-    padding: 45px 35px;
+    padding: 45px 35px 30px 35px;
 
     background-color: var(--bg-color);
     
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -20,9 +21,6 @@
     z-index: 100;
 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header { 
 }
 
 .modal-header-info {
@@ -43,16 +41,24 @@
     display: flex;
     justify-content: start;
 
+    margin-bottom: 10px;
+
     font-family: var(--font-Light);
     font-size: 10px;
 }
 
 .modal-content {
-    padding: 15px 0;
+    padding: 10px 0;
+    /* margin-top: 5px; */
+    margin-bottom: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     text-align: center;
+
+    background-color: var(--bg-color2);
+    border-radius: 10px;
 
     font-family: var(--font-Light);
     font-size: 15px;
@@ -65,36 +71,56 @@
 .modal-header2 {
     font-family: var(--font-ExtraBold);
     font-size: 16px;
-    margin-bottom: 5px;
+    text-align: center;
 }
 
 .modal-review-sum {
     display: flex;
     justify-content: start;
-    padding-bottom: 5px;
+    align-items: center;
+
+    padding: 5px;
+    
+    width: 95%;
+    min-height: 20px;
+    
+    text-align: start;
+    
+    font-family: var(--font-Light);
+    font-size: 13px;
 }
 
 .modal-review-sum > span {
-    padding-left: 5px;
+    margin-left: 5px;
 }
 
 .modal-image {
     display: flex;
+    padding: 10px 0;
+    margin-bottom: 10px;
 }
 
 .modal-image-1 {
-    width: 65%;
+    /* width: 65%; */
+    flex: 2;
     padding-right: 10px;
 }
 
 .modal-image-2 {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .modal-footer {
-    margin-top: auto;
+    /* margin-top: auto; */
     display: flex;
     justify-content: center;
+}
+
+.modal-info {
+    font-family: var(--font-Light);
+    font-size: 10px;
+    text-align: center;
 }
