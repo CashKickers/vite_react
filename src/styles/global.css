@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Pretendard-Light';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Medium';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-SemiBold';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-ExtraBold';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+}
+
+:root {
+    --font-Light: 'Pretendard-Light', sans-serif;
+    --font-Regular: 'Pretendard-Regular', sans-serif;
+    --font-Medium: 'Pretendard-Medium', sans-serif;
+    --font-SemiBold: 'Pretendard-SemiBold', sans-serif;
+    --font-ExtraBold: 'Pretendard-ExtraBold', sans-serif;
+
+    --font-size-small: 10px;
+    --font-size-medium: 13px;
+    --font-size-large: 16px;
+    --font-size-xlarge: 20px;
+    --font-size-xxlarge: 25px;
+
+    --bg-color: #FEF8ED;
+    --bg-color2: #FFFDFA;
+    --yellow: #EDC55B;
+    --green: #327039;
+    --black: #133020;
+    --gray1: #d9d9d9;
+    --gray2: rgba(0,0,0,0.4);
+    --gray3: #636366;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    
+  }
+
+  ::-webkit-scrollbar-thumb  {
+    background: var(--yellow);
+    border-radius: 30px;
+  }
