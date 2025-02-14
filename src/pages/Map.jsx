@@ -9,6 +9,8 @@ import markerUpIcon from '../assets/marker-up.svg'
 import markerCommonIcon from '../assets/marker-common.svg'
 import markerDownIcon from '../assets/marker-down.svg'
 
+import { mapApi as fetchMapData } from '../api/map'
+
 import '../styles/global.css'
 
 const KakaoMap = ( ) => {
@@ -17,8 +19,8 @@ const KakaoMap = ( ) => {
 
   const [result, setResult] = useState("")
   const [center, setCenter] = useState({
-    lat: 33.450701,
-    lng: 126.570667,
+    lat: 37.5696765,
+    lng: 126.9768121,
   })
 
   const [map, setMap] = useState(null) // 지도 객체 저장
@@ -32,25 +34,33 @@ const KakaoMap = ( ) => {
 
   const [markers, setMarkers] = useState([]) // marker 정보 저장
                                              // lat, lng, type, id (식당 아이디) 저장 필요
-
-  // 현재 위치 가져오기
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCenter({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          })
-        },
-        (error) => {
-          console.error('Geolocation error:', error)
-        }
-      )
+  // api 호출 함수
+  const loadRestaurants = async () => {
+    // bounds 객체가 null 또는 undefined인지 확인
+    if (!bounds) {
+      console.error('Bounds 객체가 올바르게 정의되지 않았습니다.', bounds);
+      return;
     }
 
-    console.log(isModalOpen, restaurantId);
-  }, [])
+    const min_lat = bounds.getSouthWest().getLat();
+    const min_lng = bounds.getSouthWest().getLng();
+    const max_lat = bounds.getNorthEast().getLat();
+    const max_lng = bounds.getNorthEast().getLng();
+
+    console.log('api 호출: ', min_lat, min_lng, max_lat, max_lng);
+
+    try {
+      const data = await fetchMapData({ min_lat, min_lng, max_lat, max_lng }); // Call the function with the correct parameters
+      console.log(data);
+
+      if (data) {
+        setMarkers(data); // 마커 데이터 업데이트
+        setIsResearchBtnShow(false); // 데이터가 로드되면 버튼 숨김
+      }
+    } catch (error) {
+      console.error('API 호출 중 오류 발생:', error);
+    }
+  };
 
   // 지도 이동 시 getBounds() 호출
   const handleBoundsChanged = (map) => {
@@ -59,9 +69,27 @@ const KakaoMap = ( ) => {
     console.log("지도 영역 변경됨:", bounds)
   }
 
+  // useEffect(() => {
+  //   // 현재 위치 가져오기
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         setCenter({
+  //           lat: position.coords.latitude,
+  //           lng: position.coords.longitude,
+  //         })
+  //       },
+  //       (error) => {
+  //         console.error('Geolocation error:', error)
+  //       }
+  //     )
+  //   }
+
+  //   console.log(isModalOpen, restaurantId);
+  // }, [])
+
   // 지도가 생성된 후 실행
   useEffect(()=> {
-    if (!map) return
 
     // 지도 객체가 존재하면 getBounds 호출 가능
     if (!map) return
@@ -71,6 +99,17 @@ const KakaoMap = ( ) => {
     setBounds(bounds)
     console.log("현재 지도 영역: ", bounds);
   }, [map])
+
+  // bounds 값이 변경될 때마다 loadRestaurants 함수 호출
+  useEffect(() => {
+    if (!bounds) return;
+
+    loadRestaurants();
+  }, [bounds]);
+
+  useEffect(()=> {
+    console.log(markers)
+  }, [markers])
 
   // 식당 간략 정보 모달 관련 함수
   const onCloseModal = () => {
@@ -132,29 +171,39 @@ const KakaoMap = ( ) => {
         onBoundsChanged={handleBoundsChanged} // 지도 이동 시 bounds 값 갱신
       >
         <Modal isOpen={isModalOpen} onClose={onCloseModal} id={restaurantId} my={isRestaurantMy}/>
+        {markers.length > 0 ? (
         <MarkerClusterer
           averageCenter={true} // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
-          minLevel={10} // 클러스터 할 최소 지도 레벨 -> 수정
+          minLevel={4} // 클러스터 할 최소 지도 레벨
         >
-          {/* api에서 불러온 값을 아래와 같이 표현 / markers.map(mark => { .. }) 이용 */}
-          <MapMarker
-            // key={mark.id}
-            position={{
-              // 마커가 표시될 위치
-              lat: center.lat, // mark.lat
-              lng: center.lng, // mark.lng
-            }}
-            image={{
-              src: markerUpIcon, // mark.type에 따라 다른 아이콘 설정
-              size: {
-                width: 44,
-                height: 52,
-              }, // 마커이미지의 크기
-            }}
-            clickable={true} // 마커를 클릭 시, 지도의 클릭 이벤트가 발생 않게 함
-            onClick={() => onClickMarker(1)} // mark.id
-          />
+          {/* API에서 불러온 값을 아래와 같이 표현 / markers.map(mark => { .. }) 이용 */}
+          {markers.map(mark => {
+            // mark.state_id에 따라 다른 아이콘 설정
+            const icon = mark.state_id === 1 || mark.state_id === 2 ? (markerUpIcon) : (mark.state_id === 3 ? (markerCommonIcon) : (markerDownIcon))
+            return (
+              <MapMarker
+                key={`${mark.id}-${mark.latitude}-${mark.longitude}`} // 고유 키로 설정
+                position={{ // 마커가 표시될 위치
+                  lat: mark.latitude,
+                  lng: mark.longitude,
+                }}
+                image={{
+                  src: icon,
+                  size: {
+                    width: 44,
+                    height: 52,
+                  }, // 마커 이미지의 크기
+                }}
+                clickable={true} // 마커를 클릭 시, 지도의 클릭 이벤트가 발생 않게 함
+                zIndex={30}
+                onClick={() => onClickMarker(mark.id)}
+              />
+            );
+          })}
         </MarkerClusterer>
+      ) : (
+        <></>
+      )}
       </Map>
     </div>
   )

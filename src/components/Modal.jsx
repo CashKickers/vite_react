@@ -7,6 +7,9 @@ import { Button, Image } from 'antd-mobile'
 import MyButton from './MyButton'
 // 그래프 모듈 임포트
 
+import { restaurantApi } from "../api/restaurant"
+import { reviewSummaryApi } from "../api/reviewSummary"
+
 import '../styles/global.css'
 import '../styles/modal.css'
 
@@ -24,34 +27,84 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     const { state } = location;
 
     // 식당 기본 정보
-    const [name, setName] = useState();
-    // const [isMy, setIsMy] = useState(my || (state && state.my));
+    const [name, setName] = useState(null);
     const [isMy, setIsMy] = useState((my !== null) ? my : (state && state.my));
-    const [address, setAddress] = useState();
+    const [address, setAddress] = useState(null);
     // 리뷰 변화
     const [month, setMonth] = useState(0);
     const [changeStatus, setChangeStatus] = useState();
     // 리뷰 요약
-    const reviewSumIcons = [
-        {type: 'flavor', icon: flavorIcon},
-        {type: 'price', icon: priceIcon},
-        {type: 'clean', icon: cleanIcon},
-        {type: 'customer', icon: customerIcon},
-        {type: 'mood', icon: moodIcon}
-    ];
+    const reviewSumIcons = {
+        '맛': flavorIcon,
+        '가격': priceIcon,
+        '청결도': cleanIcon,
+        '고객응대': customerIcon,
+        '분위기': moodIcon
+    };
     const [reviewSums, setReviewSums] = useState([{ type: '', icon: '', content: ''}]);
     // 이미지
     const [imageLinks, setImageLinks] = useState([]);
 
+    // api
+    // - 식당 정보
+    const loadRestaurant = async () => {
+        try {
+            const data = await restaurantApi({ id }); // Call the function with the correct parameters
+            console.log("restaurant: ", data);
+
+            if (data && id === data.id) {
+                setName(data.name);
+                setAddress(data.address);
+                setImageLinks(data.images);
+            }
+        } catch (error) {
+            console.error('API 호출 중 오류 발생:', error);
+        }
+    };
+    // - 그래프
+    // - 리뷰 요약
+    const loadReviewSummary = async () => {
+        try {
+            const data = await reviewSummaryApi({ id });
+            console.log("review summary: ", data);
+
+            if (data && id === data.id) {
+                const reviewSumData = data.map(value => (
+                    {
+                        'type': value.category,
+                        'icon': reviewSumIcons[value.category],
+                        'content': value.contents,
+                    }
+                ))
+                setReviewSums(reviewSumData);
+            }
+        } catch (error) {
+            console.error('API 호출 중 오류 발생: ', error);
+        }
+    }
+
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
-        if (navigate) navigate('/details', {state: {from: 'map', my: my}})
+        if (navigate) navigate('/details', {state: {from: 'map', my: my, id: id}})
     }
 
     useEffect(()=> {
         setIsMy((my !== null) ? my : (state && state.my))
         console.log("Modal: ", my, (state && state.my), (my !== null) ? my : (state && state.my), isMy);
     }, [my, state, isMy]);
+
+    useEffect(()=> {
+        if (isOpen) {
+            loadRestaurant();
+            loadReviewSummary();
+        }
+        else {
+            setName(null);
+            setAddress(null);
+            setImageLinks([]);
+            setReviewSums([]);
+        }
+    }, [isOpen])
 
     return (
         <>
@@ -62,7 +115,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                     <div className="modal-header">
                         <div className="modal-header-info">
                             <div className="modal-header-name">
-                                <div style={{paddingRight: "7px"}}>광화문 한옥집</div>
+                                <div style={{paddingRight: "7px"}}>{name}</div>
                                 {/* <MyButton setState={my} id={id} /> */}
                                 <MyButton setState={isMy} id={id} />
                             </div>
@@ -70,22 +123,18 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         </div>
                         <div className="modal-header-address">
                             <Image src={addressIcon} width="13px" />
-                            <span style={{paddingLeft: "2px"}}>서울특별시 종로구 새문안로5가길 7 세종클럽 지하 1층</span>
+                            <span style={{paddingLeft: "2px"}}>{address}</span>
                         </div>
                     </div>
 
                     <div style={{overflowY: "auto"}}>
                         {/* 그래프 */}
                         <div className="modal-content">
-                                {/* 1번 멘트 */}
-                                <div>
-                                    <span className="bold">5개월 간</span>의 리뷰가
-                                </div>
                                 {/* 그래프 */}
                                 <div>
                                     그래프 ~~ !!
                                 </div>
-                                {/* 2번 멘트 */}
+                                {/* 멘트 */}
                                 <div>
                                     점점 <span className="bold">긍정적</span>으로 변하고 있어요!
                                 </div>
@@ -95,14 +144,20 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         <div className='modal-header2'>리뷰 요약</div>
                         <div className='modal-info'>* 생성형 AI가 요약한 리뷰입니다.</div>
                         <div className="modal-content">
-                            {reviewSums.map((type, icon, content) => {
+                        {reviewSums.length > 0 ? (
+                            reviewSums.map((type, icon, content) => {
                                 <div className='modal-review-sum' key={type}>
                                     <Image src={icon} width={15} />
                                     <span>
                                         {content}
                                     </span>
                                 </div>
-                            })}
+                            })
+                        ) : (
+                            <div style={{textAlign: "center", padding: "5px 10px"}}>
+                                맛, 가격, 청결도, 고객응대, 분위기와 관련된 리뷰가 부족합니다.
+                            </div>
+                        )}
                         </div>
 
                         <div className="modal-header2">대표 이미지</div>
