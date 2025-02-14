@@ -85,7 +85,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
 
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
-        if (navigate) navigate('/details', {state: {from: 'map', my: my}})
+        if (navigate) navigate('/details', {state: {from: 'map', my: my, id: id}})
     }
 
     useEffect(()=> {
@@ -95,8 +95,8 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
 
     useEffect(()=> {
         if (isOpen) {
-            loadRestaurant(id);
-            loadReviewSummary(id);
+            loadRestaurant();
+            loadReviewSummary();
         }
         else {
             setName(null);
