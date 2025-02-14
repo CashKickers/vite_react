@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Image } from 'antd-mobile'
 
 import PropTypes from 'prop-types'
@@ -21,6 +21,8 @@ import '../styles/detail.css'
 
 const Details = ( { id } ) => {
   const navigate = useNavigate();
+  const location = useLocation(); 
+  const { state } = location; // state?.id 가 있더라 id가 있어야 함
 
   // 리뷰 요약
   const reviewSumIcons = [
@@ -43,7 +45,10 @@ const Details = ( { id } ) => {
 
   // 뒤로 가기 버튼
   const onClickBackBtn = () => {
-    navigate('/map', {state: {modalOpen: true, modalId: id}})
+    if (state.from == 'map')
+      navigate('/map', {state: {modalOpen: true, modalId: id}})
+    else if (state.from == 'my')
+      navigate('/my')
   }
 
   return (
@@ -132,7 +137,7 @@ const Details = ( { id } ) => {
 }
 
 Details.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.number,
 }
 
 export default Details 

@@ -42,7 +42,7 @@ const Modal = ( { isOpen, onClose, id, } ) => {
 
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
-        if (navigate) navigate('/details')
+        if (navigate) navigate('/details', {state: {from: 'map'}})
     }
 
     return (
