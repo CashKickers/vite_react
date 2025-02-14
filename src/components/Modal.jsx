@@ -7,6 +7,9 @@ import { Button, Image } from 'antd-mobile'
 import MyButton from './MyButton'
 // 그래프 모듈 임포트
 
+import { restaurantApi } from "../api/restaurant"
+import { reviewSummaryApi } from "../api/reviewSummary"
+
 import '../styles/global.css'
 import '../styles/modal.css'
 
@@ -24,10 +27,9 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     const { state } = location;
 
     // 식당 기본 정보
-    const [name, setName] = useState();
-    // const [isMy, setIsMy] = useState(my || (state && state.my));
+    const [name, setName] = useState(null);
     const [isMy, setIsMy] = useState((my !== null) ? my : (state && state.my));
-    const [address, setAddress] = useState();
+    const [address, setAddress] = useState(null);
     // 리뷰 변화
     const [month, setMonth] = useState(0);
     const [changeStatus, setChangeStatus] = useState();
@@ -43,6 +45,21 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     // 이미지
     const [imageLinks, setImageLinks] = useState([]);
 
+    // 식당 정보 불러오는 api
+    const loadRestaurant = async () => {
+        try {
+        const data = await restaurantApi({ id }); // Call the function with the correct parameters
+        console.log(data);
+
+        if (data && id === data.id) {
+            setName(data.name);
+            setAddress(data.address);
+        }
+        } catch (error) {
+            console.error('API 호출 중 오류 발생:', error);
+        }
+    };
+
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
         if (navigate) navigate('/details', {state: {from: 'map', my: my}})
@@ -53,6 +70,16 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
         console.log("Modal: ", my, (state && state.my), (my !== null) ? my : (state && state.my), isMy);
     }, [my, state, isMy]);
 
+    useEffect(()=> {
+        if (isOpen) {
+            loadRestaurant(id);
+        }
+        else {
+            setName(null);
+            setAddress(null);
+        }
+    }, [isOpen])
+
     return (
         <>
         {
@@ -62,7 +89,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                     <div className="modal-header">
                         <div className="modal-header-info">
                             <div className="modal-header-name">
-                                <div style={{paddingRight: "7px"}}>광화문 한옥집</div>
+                                <div style={{paddingRight: "7px"}}>{name}</div>
                                 {/* <MyButton setState={my} id={id} /> */}
                                 <MyButton setState={isMy} id={id} />
                             </div>
@@ -70,7 +97,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         </div>
                         <div className="modal-header-address">
                             <Image src={addressIcon} width="13px" />
-                            <span style={{paddingLeft: "2px"}}>서울특별시 종로구 새문안로5가길 7 세종클럽 지하 1층</span>
+                            <span style={{paddingLeft: "2px"}}>{address}</span>
                         </div>
                     </div>
 
