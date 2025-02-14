@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 import { Image } from 'antd-mobile'
+
+import PropTypes from 'prop-types'
 
 import MyButton from '../components/MyButton'
 import Review from '../components/Review'
@@ -17,6 +20,7 @@ import '../styles/global.css'
 import '../styles/detail.css'
 
 const Details = ( { id } ) => {
+  const navigate = useNavigate();
 
   // 리뷰 요약
   const reviewSumIcons = [
@@ -37,6 +41,11 @@ const Details = ( { id } ) => {
     mood: { type: '분위기', selected: false, },
   })
 
+  // 뒤로 가기 버튼
+  const onClickBackBtn = () => {
+    navigate('/map', {state: {modalOpen: true, modalId: id}})
+  }
+
   return (
     <div style ={{
       backgroundColor: 'var(--bg-color)',
@@ -45,7 +54,7 @@ const Details = ( { id } ) => {
       padding: "20px 15px",
     }}>
       <div className="detail-header">
-        <div className="detail-header-btn">
+        <div className="detail-header-btn" onClick={onClickBackBtn}>
           <Image src={btnBackIcon} width="40px" />
         </div>
         <div className="detail-header-basicinfo">
@@ -120,6 +129,10 @@ const Details = ( { id } ) => {
       </div>
     </div>
   )
+}
+
+Details.propTypes = {
+  id: PropTypes.number.isRequired,
 }
 
 export default Details 

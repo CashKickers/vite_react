@@ -1,6 +1,7 @@
 import { Map, MapMarker, MarkerClusterer } from "react-kakao-maps-sdk"
 import { useState, useEffect } from "react"
 import { Input, Button } from 'antd-mobile'
+import { useLocation } from 'react-router-dom'
 
 import Modal from "../components/Modal"
 
@@ -10,7 +11,10 @@ import markerDownIcon from '../assets/marker-down.svg'
 
 import '../styles/global.css'
 
-const KakaoMap = () => {
+const KakaoMap = ( ) => {
+  const location = useLocation();
+  const { state } = location;
+
   const [result, setResult] = useState("")
   const [center, setCenter] = useState({
     lat: 33.450701,
@@ -20,8 +24,8 @@ const KakaoMap = () => {
   const [map, setMap] = useState(null) // 지도 객체 저장
   const [bounds, setBounds] = useState(null) // 지도 영역 정보 저장
 
-  const [isModalOpen, setIsModalOpen] = useState(false) // 식당 간략 정보 모달 오픈 유무
-  const [restaurantId, setRestaurantId] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(state?.modalOpen || false) // 식당 간략 정보 모달 오픈 유무
+  const [restaurantId, setRestaurantId] = useState(state?.modalId || null)
 
   const [isResearchBtnShow, setIsResearchBtnShow] = useState(false) // 이 지역 재검색 버튼 show 유무
 
@@ -43,6 +47,8 @@ const KakaoMap = () => {
         }
       )
     }
+
+    console.log(isModalOpen, restaurantId);
   }, [])
 
   // 지도 이동 시 getBounds() 호출
