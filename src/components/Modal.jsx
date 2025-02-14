@@ -40,6 +40,11 @@ const Modal = ( { isOpen, onClose, id, } ) => {
     // 이미지
     const [imageLinks, setImageLinks] = useState([]);
 
+    // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
+    const onClick = () => {
+        if (navigate) navigate('/details')
+    }
+
     return (
         <>
         {
@@ -110,7 +115,8 @@ const Modal = ( { isOpen, onClose, id, } ) => {
                         <Button
                             block
                             shape='rounded'
-                            style={{ backgroundColor: 'var(--yellow)', color: '#fff' }} 
+                            style={{ backgroundColor: 'var(--yellow)', color: '#fff' }}
+                            onClick={onClick}
                         >
                             자세히 보기
                         </Button>
