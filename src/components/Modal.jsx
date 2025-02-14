@@ -34,31 +34,54 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     const [month, setMonth] = useState(0);
     const [changeStatus, setChangeStatus] = useState();
     // 리뷰 요약
-    const reviewSumIcons = [
-        {type: 'flavor', icon: flavorIcon},
-        {type: 'price', icon: priceIcon},
-        {type: 'clean', icon: cleanIcon},
-        {type: 'customer', icon: customerIcon},
-        {type: 'mood', icon: moodIcon}
-    ];
+    const reviewSumIcons = {
+        '맛': flavorIcon,
+        '가격': priceIcon,
+        '청결도': cleanIcon,
+        '고객응대': customerIcon,
+        '분위기': moodIcon
+    };
     const [reviewSums, setReviewSums] = useState([{ type: '', icon: '', content: ''}]);
     // 이미지
     const [imageLinks, setImageLinks] = useState([]);
 
-    // 식당 정보 불러오는 api
+    // api
+    // - 식당 정보
     const loadRestaurant = async () => {
         try {
-        const data = await restaurantApi({ id }); // Call the function with the correct parameters
-        console.log(data);
+            const data = await restaurantApi({ id }); // Call the function with the correct parameters
+            console.log("restaurant: ", data);
 
-        if (data && id === data.id) {
-            setName(data.name);
-            setAddress(data.address);
-        }
+            if (data && id === data.id) {
+                setName(data.name);
+                setAddress(data.address);
+                setImageLinks(data.images);
+            }
         } catch (error) {
             console.error('API 호출 중 오류 발생:', error);
         }
     };
+    // - 그래프
+    // - 리뷰 요약
+    const loadReviewSummary = async () => {
+        try {
+            const data = await reviewSummaryApi({ id });
+            console.log("review summary: ", data);
+
+            if (data && id === data.id) {
+                const reviewSumData = data.map(value => (
+                    {
+                        'type': value.category,
+                        'icon': reviewSumIcons[value.category],
+                        'content': value.contents,
+                    }
+                ))
+                setReviewSums(reviewSumData);
+            }
+        } catch (error) {
+            console.error('API 호출 중 오류 발생: ', error);
+        }
+    }
 
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
@@ -73,10 +96,13 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     useEffect(()=> {
         if (isOpen) {
             loadRestaurant(id);
+            loadReviewSummary(id);
         }
         else {
             setName(null);
             setAddress(null);
+            setImageLinks([]);
+            setReviewSums([]);
         }
     }, [isOpen])
 
@@ -104,15 +130,11 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                     <div style={{overflowY: "auto"}}>
                         {/* 그래프 */}
                         <div className="modal-content">
-                                {/* 1번 멘트 */}
-                                <div>
-                                    <span className="bold">5개월 간</span>의 리뷰가
-                                </div>
                                 {/* 그래프 */}
                                 <div>
                                     그래프 ~~ !!
                                 </div>
-                                {/* 2번 멘트 */}
+                                {/* 멘트 */}
                                 <div>
                                     점점 <span className="bold">긍정적</span>으로 변하고 있어요!
                                 </div>
@@ -122,14 +144,20 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         <div className='modal-header2'>리뷰 요약</div>
                         <div className='modal-info'>* 생성형 AI가 요약한 리뷰입니다.</div>
                         <div className="modal-content">
-                            {reviewSums.map((type, icon, content) => {
+                        {reviewSums.length > 0 ? (
+                            reviewSums.map((type, icon, content) => {
                                 <div className='modal-review-sum' key={type}>
                                     <Image src={icon} width={15} />
                                     <span>
                                         {content}
                                     </span>
                                 </div>
-                            })}
+                            })
+                        ) : (
+                            <div style={{textAlign: "center", padding: "5px 10px"}}>
+                                맛, 가격, 청결도, 고객응대, 분위기와 관련된 리뷰가 부족합니다.
+                            </div>
+                        )}
                         </div>
 
                         <div className="modal-header2">대표 이미지</div>
