@@ -26,6 +26,7 @@ const KakaoMap = ( ) => {
 
   const [isModalOpen, setIsModalOpen] = useState(state?.modalOpen || false) // 식당 간략 정보 모달 오픈 유무
   const [restaurantId, setRestaurantId] = useState(state?.modalId || null)
+  const [isRestaurantMy, setIsRestaurnatMy] = useState(false)
 
   const [isResearchBtnShow, setIsResearchBtnShow] = useState(false) // 이 지역 재검색 버튼 show 유무
 
@@ -75,10 +76,28 @@ const KakaoMap = ( ) => {
   const onCloseModal = () => {
     setIsModalOpen(false)
     setRestaurantId(null)
+    setIsRestaurnatMy(null)
   }
   const onClickMarker = (id) => {
     setIsModalOpen(true)
     setRestaurantId(id); // api 불러오는 것에 따라 다르게 설정
+
+    console.log("모달이 열렸을 때 id:", id, isRestaurantMy);
+    console.log("현재 localStorage my 값:", localStorage.getItem('my'));
+    
+    const myList = localStorage.getItem('my'); // 로컬스토리지에서 가져옴
+    if (myList) {
+        try {
+            const parsedSet = new Set(JSON.parse(myList));
+            console.log(parsedSet);
+            console.log(parsedSet.has(id));
+            setIsRestaurnatMy(parsedSet.has(id)); // 수정: parsedSet.has(id)를 정확히 반영
+        } catch (error) {
+            console.error('Error parsing JSON from localStorage:', error);
+        }
+    } else {
+      setIsRestaurnatMy(false);
+    }
   }
   
   // setIsResearchBtnShow(ture) 할 로직 구현
@@ -112,7 +131,7 @@ const KakaoMap = ( ) => {
         onCreate={setMap} // 지도가 생성되면 state에 저장
         onBoundsChanged={handleBoundsChanged} // 지도 이동 시 bounds 값 갱신
       >
-        <Modal isOpen={isModalOpen} onClose={onCloseModal} id={restaurantId} />
+        <Modal isOpen={isModalOpen} onClose={onCloseModal} id={restaurantId} my={isRestaurantMy}/>
         <MarkerClusterer
           averageCenter={true} // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
           minLevel={10} // 클러스터 할 최소 지도 레벨 -> 수정
@@ -133,7 +152,7 @@ const KakaoMap = ( ) => {
               }, // 마커이미지의 크기
             }}
             clickable={true} // 마커를 클릭 시, 지도의 클릭 이벤트가 발생 않게 함
-            onClick={id => onClickMarker(id)}
+            onClick={() => onClickMarker(1)} // mark.id
           />
         </MarkerClusterer>
       </Map>

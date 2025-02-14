@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import PropTypes from 'prop-types'
 import { Button, Image } from 'antd-mobile'
@@ -18,12 +18,15 @@ import cleanIcon from '../assets/clean.svg'
 import customerIcon from '../assets/customer.svg'
 import moodIcon from '../assets/mood.svg'
 
-const Modal = ( { isOpen, onClose, id, } ) => {
+const Modal = ( { isOpen, onClose, id, my = null } ) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { state } = location;
 
     // 식당 기본 정보
     const [name, setName] = useState();
-    const [isMy, setIsMy] = useState(false);
+    // const [isMy, setIsMy] = useState(my || (state && state.my));
+    const [isMy, setIsMy] = useState((my !== null) ? my : (state && state.my));
     const [address, setAddress] = useState();
     // 리뷰 변화
     const [month, setMonth] = useState(0);
@@ -42,8 +45,13 @@ const Modal = ( { isOpen, onClose, id, } ) => {
 
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
-        if (navigate) navigate('/details', {state: {from: 'map'}})
+        if (navigate) navigate('/details', {state: {from: 'map', my: my}})
     }
+
+    useEffect(()=> {
+        setIsMy((my !== null) ? my : (state && state.my))
+        console.log("Modal: ", my, (state && state.my), (my !== null) ? my : (state && state.my), isMy);
+    }, [my, state, isMy]);
 
     return (
         <>
@@ -55,7 +63,8 @@ const Modal = ( { isOpen, onClose, id, } ) => {
                         <div className="modal-header-info">
                             <div className="modal-header-name">
                                 <div style={{paddingRight: "7px"}}>광화문 한옥집</div>
-                                <MyButton setState={isMy} />
+                                {/* <MyButton setState={my} id={id} /> */}
+                                <MyButton setState={isMy} id={id} />
                             </div>
                             <Image src={modalCloseIcon} width="50px" onClick={onClose} />
                         </div>
@@ -133,6 +142,7 @@ Modal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     id: PropTypes.number.isRequired,
+    my: PropTypes.bool || null,
 }
 
 export default Modal;

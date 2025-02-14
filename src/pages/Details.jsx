@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Image } from 'antd-mobile'
 
@@ -46,10 +46,14 @@ const Details = ( { id } ) => {
   // 뒤로 가기 버튼
   const onClickBackBtn = () => {
     if (state.from == 'map')
-      navigate('/map', {state: {modalOpen: true, modalId: id}})
+      navigate('/map', {state: {modalOpen: true, modalId: id, my: state?.my || false}})
     else if (state.from == 'my')
       navigate('/my')
   }
+
+  useEffect(()=> {
+    console.log(state)
+  }, [])
 
   return (
     <div style ={{
@@ -73,7 +77,7 @@ const Details = ( { id } ) => {
         </div>
         <div className="detail-header-btn">
           {/* my 상태에 따라 true/false 값 수정 */}
-          <MyButton setState={false} /> 
+          <MyButton setState={state?.my || false} /> 
         </div>
       </div>
 

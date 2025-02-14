@@ -34,7 +34,7 @@ const MyPage = () => {
           height={65}
           fit='cover'
           style ={{
-            flex: 1,
+            flex: 1.3,
             borderRadius: 8
           }}
         />
