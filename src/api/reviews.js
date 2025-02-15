@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const reviewsApi = async ( {id} ) => {
-    const url = `${BASE_URL}/reviews/${id}`
+    const url = `${BASE_URL}/reviews/restaurant/${id}`
     try {
         const response = await fetch( url, { method: 'GET', } )
         if (!response.ok) {

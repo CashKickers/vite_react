@@ -107,7 +107,7 @@ const MyPage = () => {
             style ={{
               flex: 1,
             }}
-            onClick = {() => onClickMore(1)} // item.key 등처럼 상황에 맞게 변경
+            onClick = {() => onClickMore(restaurant.id)}
           >
             <Image src={moreIcon} height={15} />
           </div>

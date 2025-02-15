@@ -112,7 +112,7 @@ const Details = ( { id = null } ) => {
       const data = await reviewsApi({ id: restaurantId });
       console.log("all reviews: ", data);
 
-      if (data && restaurantId === data.id) {
+      if (data && data.length > 0 && restaurantId === data[0].retaurant_id) {
         const reviewData = data.map(value => (
           {
             id: value.id,
@@ -140,10 +140,15 @@ const Details = ( { id = null } ) => {
   }, [])
 
   return (
+    <div style={{
+      minHeight: "100vh",
+      backgroundColor: 'var(--bg-color)',
+    }}>
     <div style ={{
       backgroundColor: 'var(--bg-color)',
       width: "100%",
-      height: "100%",
+      // height: "100%",
+      height: "auto",
       padding: "20px 15px",
     }}>
       <div className="detail-header">
@@ -222,7 +227,7 @@ const Details = ( { id = null } ) => {
           <hr style={{color: "#D6D6D6"}}/>
           {/* 사용자 리뷰 리스트 출력 */}
           {reviews.length > 0 ? (
-            reviews.map(review => {
+            reviews.map(review => (
               <Review
                 key={review.id}
                 userName={review.user_code}
@@ -230,7 +235,7 @@ const Details = ( { id = null } ) => {
                 content={review.contents}
                 date={review.write_date}
               />
-            })
+            ))
           ) : (
             <div style={{textAlign: "center", padding: "5px 10px"}}>
               상세 리뷰가 없습니다.
@@ -238,6 +243,7 @@ const Details = ( { id = null } ) => {
           )}
         </div>
       </div>
+    </div>
     </div>
   )
 }
