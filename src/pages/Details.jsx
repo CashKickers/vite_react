@@ -35,6 +35,7 @@ const Details = ( { id = null } ) => {
 
   // redux
   const selectedId = useAppSelector(state => state.restaurant.selectedRestaurantId); // 현재 선택 식당 아이디값
+  const selectedCategories = useAppSelector((state) => state.review.selectedCategories);
 
   const restaurantId = id !== null ? id : selectedId; // 선택된 식당 아이디
   const [isSelected, setIsSelected] = useState(false); // 선택된 식당이 my에 저장되어 있는지 확인
@@ -66,7 +67,7 @@ const Details = ( { id = null } ) => {
   const [reviewCategories, setReviewCategories] = useState({
     flavor: { type: '맛', selected: false, },
     price: { type: '가격', selected: false, },
-    clean: { type: '위생', selected: false, },
+    clean: { type: '청결도', selected: false, },
     customer: { type: '고객응대', selected: false, },
     mood: { type: '분위기', selected: false, },
   })
@@ -217,6 +218,21 @@ const Details = ( { id = null } ) => {
     }
   }, [])
 
+  const [filteredReviews, setFilteredReviews] = useState(reviews);
+
+  useEffect(() => {
+    if (selectedCategories.length === 0) {
+      setFilteredReviews(reviews);
+    } else {
+      setFilteredReviews(
+        reviews.filter(review => 
+          review.categories.some(category => selectedCategories.includes(category))
+        )
+      );
+    }
+  }, [selectedCategories, reviews]);
+
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -312,7 +328,7 @@ const Details = ( { id = null } ) => {
           </div>
           <hr style={{color: "#D6D6D6"}}/>
           {/* 사용자 리뷰 리스트 출력 */}
-          {reviews.length > 0 ? (
+          {/* {reviews.length > 0 ? (
             reviews.map(review => (
               <Review
                 key={review.id}
@@ -325,6 +341,21 @@ const Details = ( { id = null } ) => {
           ) : (
             <div style={{textAlign: "center", padding: "5px 10px"}}>
               상세 리뷰가 없습니다.
+            </div>
+          )} */}
+          {filteredReviews.length > 0 ? (
+            filteredReviews.map(review => (
+              <Review
+                key={review.id}
+                userName={review.user_code}
+                tags={review.categories}
+                content={review.contents}
+                date={review.write_date}
+              />
+            ))
+          ) : (
+            <div style={{ textAlign: "center", padding: "5px 10px" }}>
+              선택된 카테고리에 해당하는 리뷰가 없습니다.
             </div>
           )}
         </div>

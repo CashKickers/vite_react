@@ -1,14 +1,21 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react'
 
+import { useAppDispatch } from "../store/hooks";
+import { selectCategory } from '../store/reviewSlice';
+
 import '../styles/review.css'
 
 const Tag = ( {title, size = 'small', isCategory = false, selected} ) => {
+    // redux
+    const dispatch = useAppDispatch();
+    
     const [isSelected, setIsSelected] = useState(selected);
 
     const onClick = () => {
         if (!isCategory) return;
         setIsSelected(!isSelected)
+        dispatch(selectCategory(title))
     }
 
     return (
