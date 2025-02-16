@@ -8,11 +8,11 @@ import koKR from 'antd-mobile/es/locales/ko-KR'
 import { ConfigProvider } from 'antd-mobile'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <ConfigProvider locale={koKR}>
       <Provider store={store}>
         <App />
       </Provider>
     </ConfigProvider>
-  </StrictMode>,
+  // </StrictMode>,
 )
