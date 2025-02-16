@@ -1,14 +1,16 @@
+import PropTypes from 'prop-types'
+
 import { useState, useEffect } from 'react';
 import { useNavigate, } from 'react-router-dom';
 
-import PropTypes from 'prop-types'
 import { Button, Image } from 'antd-mobile'
 
 import MyButton from './MyButton'
-// 그래프 모듈 임포트
+import MyCustomChart from './MyCustomChart';
 
 import { restaurantApi } from "../api/restaurant"
 import { reviewSummaryApi } from "../api/reviewSummary"
+import { graphYM } from '../api/graphYM'
 
 import '../styles/global.css'
 import '../styles/modal.css'
@@ -29,8 +31,9 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     const [isMy, setIsMy] = useState((my !== null) ? my : false); // 왜 제대로 저장이 되지 않는 것인가...
     const [address, setAddress] = useState(null);
     // 리뷰 변화
-    const [month, setMonth] = useState(0);
-    const [changeStatus, setChangeStatus] = useState();
+    const [graphDate, setGraphDate] = useState([]);
+    const [positive, setPositive] = useState([]);
+    const [negative, setNegative] = useState([]);
     // 리뷰 요약
     const reviewSumIcons = {
         '맛': flavorIcon,
@@ -60,13 +63,32 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
         }
     };
     // - 그래프
+    const loadGraphData = async () => {
+        try {
+            const data = await graphYM({ id }); // Call the function with the correct parameters
+            console.log(data);
+
+            if (data) {
+                console.log(data)
+                const dates = data.data.map(item => item.date);
+                const positives = data.data.map(item => item.positive);
+                const negatives = data.data.map(item => item.negative);
+
+                console.log(dates, positives, negatives)
+
+                setGraphDate(dates);
+                setPositive(positives);
+                setNegative(negatives);
+            }
+        } catch (error) {
+            console.error('API 호출 중 오류 발생:', error);
+        }
+    }
     // - 리뷰 요약
     const loadReviewSummary = async () => {
         try {
             const data = await reviewSummaryApi({ id });
-            console.log("review summary: ", data);
-
-            if (data && id === data.id) {
+            if (data && data.length > 0 && id === data[0].retaurant_id) {
                 const reviewSumData = data.map(value => (
                     {
                         'type': value.category,
@@ -91,6 +113,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
         if (isOpen) {
             loadRestaurant();
             loadReviewSummary();
+            loadGraphData();
         }
         else {
             setName(null);
@@ -163,9 +186,9 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         {/* 그래프 */}
                         <div className="modal-content">
                                 {/* 그래프 */}
-                                <div>
-                                    그래프 ~~ !!
-                                </div>
+                                <div><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
+                                <div>(단위: %)</div>
+                                <MyCustomChart date={graphDate} positive={positive} negative={negative}/>
                                 {/* 멘트 */}
                                 <div>
                                     점점 <span className="bold">긍정적</span>으로 변하고 있어요!
@@ -179,7 +202,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         {reviewSums.length > 0 ? (
                             reviewSums.map((review) => (
                                 <div className='modal-review-sum' key={review.type}>
-                                    <Image src={review.icon} width={15} />
+                                    <Image src={review.icon} width={20} />
                                     <span>
                                         {review.content}
                                     </span>

@@ -1,26 +1,31 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+
+import { useState } from 'react';
 import { Chart as ChartJS } from 'chart.js/auto';
 import { Chart } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(ChartDataLabels);
 
-const MyCustomChart = () => {
-  const labels = [
-    '24년\n9월',
-    '24년\n10월',
-    '24년\n11월',
-    '24년\n12월',
-    '25년\n1월'
-  ];
+const MyCustomChart = ( { date, positive, negative } ) => {
+  // const labels = [
+  //   '24년\n9월',
+  //   '24년\n10월',
+  //   '24년\n11월',
+  //   '24년\n12월',
+  //   '25년\n1월'
+  // ];
+  const [labels, setLabels] = useState(date);
+  const [positiveData, setPositiveData] = useState(positive)
+  const [negativeData, setNegativeData] = useState(negative)
   
   const data = {
-    labels: labels,
+    labels: date,
     datasets: [
       {
         type: 'bar',
         label: '부정',
-        data: [60, 75, 60, 60, 60],
+        data: negative,
         backgroundColor: 'rgba(237, 197, 91, 0.5)',
         order: 1,
         barPercentage: 0.5,
@@ -28,7 +33,7 @@ const MyCustomChart = () => {
       {
         type: 'bar',
         label: '긍정',
-        data: [40, 25, 40, 40, 40],
+        data: positive,
         backgroundColor: 'rgba(19, 48, 32, 0.5)',
         barPercentage: 0.5,
         order: 1,
@@ -45,7 +50,7 @@ const MyCustomChart = () => {
       {
         type: 'line',
         label: '긍정선',
-        data: [60, 75, 60, 60, 60],
+        data: negative,
         borderColor: '#FFB800',
         borderWidth: 7,
         pointRadius:3,
@@ -131,5 +136,11 @@ const MyCustomChart = () => {
     </div>
   );
 };
+
+MyCustomChart.propTypes = {
+  date: PropTypes.array.isRequired,
+  positive: PropTypes.array.isRequired,
+  negative: PropTypes.array.isRequired,
+}
 
 export default MyCustomChart;

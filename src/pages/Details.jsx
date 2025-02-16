@@ -1,16 +1,19 @@
+import PropTypes from 'prop-types'
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Image } from 'antd-mobile'
 
-import PropTypes from 'prop-types'
-
 import MyButton from '../components/MyButton'
 import Review from '../components/Review'
 import Tag from '../components/Tag';
+import MyCustomChart from '../components/MyCustomChart';
 
 import { restaurantApi } from '../api/restaurant'
 import { reviewSummaryApi } from '../api/reviewSummary'
 import { reviewsApi } from '../api/reviews'
+import { graphYM } from '../api/graphYM'
+import { graphY } from '../api/graphY'
 
 import { useAppSelector } from "../store/hooks";
 
@@ -40,8 +43,15 @@ const Details = ( { id = null } ) => {
   const [name, setName] = useState(null);
   const [address, setAddress] = useState(null);
   const [imageLinks, setImageLinks] = useState([]);
+  // 리뷰 추세 버튼
+  const [isMonth, setIsMonth] = useState(true);
   // 리뷰 변화
-  
+  const [yMGraphDate, setYMGraphDate] = useState([]);
+  const [yMPositive, setYMPositive] = useState([]);
+  const [yMNegative, setYMNegative] = useState([]);
+  const [yGraphDate, setYGraphDate] = useState([]);
+  const [yPositive, setYPositive] = useState([]);
+  const [yNegative, setYNegative] = useState([]);
   // 리뷰 요약
   const reviewSumIcons = {
     '맛': flavorIcon,
@@ -89,13 +99,55 @@ const Details = ( { id = null } ) => {
     }
   };
   // - 그래프
+  const loadYMGraphData = async () => {
+    try {
+        const data = await graphYM({ id: restaurantId }); // Call the function with the correct parameters
+        console.log(data);
+
+        if (data) {
+            console.log(data)
+            const dates = data.data.map(item => item.date);
+            const positives = data.data.map(item => item.positive);
+            const negatives = data.data.map(item => item.negative);
+
+            console.log(dates, positives, negatives)
+
+            setYMGraphDate(dates);
+            setYMPositive(positives);
+            setYMNegative(negatives);
+        }
+    } catch (error) {
+        console.error('API 호출 중 오류 발생:', error);
+    }
+  }
+  const loadYGraphData = async () => {
+    try {
+        const data = await graphY({ id: restaurantId }); // Call the function with the correct parameters
+        console.log(data);
+
+        if (data) {
+            console.log(data)
+            const dates = data.data.map(item => item.date);
+            const positives = data.data.map(item => item.positive);
+            const negatives = data.data.map(item => item.negative);
+
+            console.log(dates, positives, negatives)
+
+            setYGraphDate(dates);
+            setYPositive(positives);
+            setYNegative(negatives);
+        }
+    } catch (error) {
+        console.error('API 호출 중 오류 발생:', error);
+    }
+  }
   // - 리뷰 요약
   const loadReviewSummary = async () => {
     try {
       const data = await reviewSummaryApi({ id: restaurantId });
       console.log("review summary: ", data);
 
-      if (data && restaurantId === data.id) {
+      if (data && data.length > 0  && restaurantId === data[0].retaurant_id) {
         const reviewSumData = data.map(value => (
           {
             type: value.category,
@@ -141,6 +193,8 @@ const Details = ( { id = null } ) => {
   useEffect(()=> {
     loadRestaurant()
     loadReviewSummary()
+    loadYMGraphData()
+    loadYGraphData()
     loadReviews()
   }, [])
 
@@ -210,7 +264,16 @@ const Details = ( { id = null } ) => {
         </div>
         <div className="detail-sub-content">
           {/* 버튼 */}
+          <div style={{
+            display: "flex",
+          }}>
+            <div className={`graph-btn-${isMonth ? 'active':'unactive'}`} onClick={()=>setIsMonth(true)}>월간</div>
+            <div className={`graph-btn-${isMonth ? 'unactive':'active'}`} onClick={()=>setIsMonth(false)}>연간</div>
+          </div>
           {/* 그래프 모듈 */}
+          <div className="detail-sub-content-descript"><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
+          <div className="detail-sub-content-descript">(단위: %)</div>
+          <MyCustomChart date={isMonth ? yMGraphDate : yGraphDate} positive={isMonth ? yMPositive : yPositive} negative={isMonth ? yMNegative : yNegative} />
         </div>
 
         {/* 리뷰 요약 정보 */}
@@ -220,14 +283,14 @@ const Details = ( { id = null } ) => {
         <div className="detail-sub-content-descript">* 사용자 리뷰 전체를 생성형 AI가 요약한 자료입니다</div>
         <div className="detail-sub-content">
           {reviewSums.length > 0 ? (
-            reviewSums.map((type, icon, content) => {
-              <div className='detail-content-reviews-sum' key={type}>
-                <Image src={flavorIcon} width="50px" style={{flex: 1}} />
-                <div className='detail-content-reviews-sum-content'>
-                  {content}
+            reviewSums.map((review) => (
+                <div className='detail-content-reviews-sum' key={review.type}>
+                    <Image src={review.icon} width={25} />
+                    <div className='detail-content-reviews-sum-content'>
+                        {review.content}
+                    </div>
                 </div>
-              </div>
-            })
+            ))
           ) : (
             <div style={{textAlign: "center", padding: "5px 10px"}}>
               맛, 가격, 청결도, 고객응대, 분위기와 관련된 리뷰가 부족합니다.

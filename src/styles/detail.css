@@ -102,3 +102,18 @@
     display: flex;
     align-items: center;
 }
+
+.graph-btn-active,
+.graph-btn-unactive {
+    margin: 0 10px; /* 양쪽에 10px의 여백 추가 */
+    cursor: pointer;
+    text-align: center;
+}
+
+.graph-btn-active {
+    color: black;
+}
+
+.graph-btn-unactive {
+    color: var(--gray1);
+}

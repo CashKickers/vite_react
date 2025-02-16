@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useState, useEffect } from 'react'
 import { Image } from 'antd-mobile'
 
 import mySvg from '../assets/my.svg'

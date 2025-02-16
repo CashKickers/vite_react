@@ -42,6 +42,9 @@ importers:
       nivo:
         specifier: ^0.31.0
         version: 0.31.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      prop-types:
+        specifier: ^15.8.1
+        version: 15.8.1
       react:
         specifier: ^19.0.0
         version: 19.0.0
