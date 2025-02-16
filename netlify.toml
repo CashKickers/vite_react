@@ -1,5 +1,5 @@
 [[redirects]]
   from = "/api/*"
-  to = "http://moft.iptime.org:8000/api/:splat"
+  to = "http://moft.iptime.org:8000/:splat"
   status = 200
   force = true
