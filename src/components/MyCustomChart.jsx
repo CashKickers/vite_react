@@ -68,6 +68,11 @@ const MyCustomChart = ( { date, positive, negative } ) => {
 
   const options = {
     responsive: true,
+    layout: {
+      padding: {
+        top: 15,
+      },
+    },
     scales: {
       x: {
         stacked: true,

@@ -13,6 +13,7 @@ import { mapApi as fetchMapData } from '../api/map'
 
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { selectRestaurant, clearSelection } from "../store/restaurantSlice";
+import { clearCategory } from '../store/reviewSlice'
 
 import '../styles/global.css'
 

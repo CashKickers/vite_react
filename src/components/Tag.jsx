@@ -14,8 +14,9 @@ const Tag = ( {title, size = 'small', isCategory = false, selected} ) => {
 
     const onClick = () => {
         if (!isCategory) return;
+        console.log(title, !isSelected)
+        dispatch(selectCategory({category: title, isSelected: !isSelected}))
         setIsSelected(!isSelected)
-        dispatch(selectCategory(title))
     }
 
     return (

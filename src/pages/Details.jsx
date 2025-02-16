@@ -15,7 +15,8 @@ import { reviewsApi } from '../api/reviews'
 import { graphYM } from '../api/graphYM'
 import { graphY } from '../api/graphY'
 
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { clearCategory } from '../store/reviewSlice'
 
 import btnBackIcon from '../assets/btn-back.svg'
 import addressIcon from '../assets/address.svg'
@@ -30,10 +31,11 @@ import '../styles/detail.css'
 
 const Details = ( ) => {
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
   const { state } = location;
 
   // redux
+  const dispatch = useAppDispatch();
   const selectedId = useAppSelector(state => state.restaurant.selectedRestaurantId); // 현재 선택 식당 아이디값
   const previousId = useAppSelector(state => state.restaurant.previousRestaurantId); // 현재 선택 식당 아이디값
   const selectedCategories = useAppSelector((state) => state.review.selectedCategories);
@@ -72,7 +74,7 @@ const Details = ( ) => {
     customer: { type: '고객응대', selected: false, },
     mood: { type: '분위기', selected: false, },
   })
-  const [reviews, setReviews] = useState([{id: '', user_code: '', contents: '', write_date: '', categories: ''}])
+  const [reviews, setReviews] = useState(null)
 
   // 뒤로 가기 버튼
   const onClickBackBtn = () => {
@@ -195,6 +197,7 @@ const Details = ( ) => {
   }
 
   useEffect(()=> {
+    dispatch(clearCategory())
     loadRestaurant()
     loadReviewSummary()
     loadYMGraphData()
@@ -224,14 +227,22 @@ const Details = ( ) => {
   const [filteredReviews, setFilteredReviews] = useState(reviews);
 
   useEffect(() => {
-    if (selectedCategories.length === 0) {
-      setFilteredReviews(reviews);
-    } else {
-      setFilteredReviews(
-        reviews.filter(review => 
-          review.categories.some(category => selectedCategories.includes(category))
-        )
-      );
+    console.log(selectedCategories, reviews)
+    if (reviews !== null) {
+      if (selectedCategories.length === 0) {
+        setFilteredReviews(reviews);
+      } else {
+        console.log("review: ", reviews);
+        console.log("review.categories: ", reviews?.categories);
+        setFilteredReviews(
+          reviews.filter(review => 
+            review.categories.some(category => selectedCategories.includes(category))
+          )
+        );
+      }
+    }
+    else {
+      setFilteredReviews([])
     }
   }, [selectedCategories, reviews]);
 
@@ -363,7 +374,7 @@ const Details = ( ) => {
                   상세 리뷰가 없습니다.
                 </div>
               )} */}
-              {filteredReviews.length > 0 ? (
+              {filteredReviews !== null && filteredReviews.length > 0 ? (
                 filteredReviews.map(review => (
                   <Review
                     key={review.id}

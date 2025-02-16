@@ -10,17 +10,20 @@ const reviewSlice = createSlice({
   initialState,
   reducers: {
     selectCategory: (state, action) => {
-      const category = action.payload;
-      if (state.selectedCategories.includes(category)) {
-        // 이미 선택된 카테고리면 제거
-        state.selectedCategories = state.selectedCategories.filter((c) => c !== category);
+      const { category, isSelected } = action.payload;
+
+      if (isSelected) {
+        // 선택: 중복 방지 후 추가
+        if (!state.selectedCategories.includes(category)) {
+          state.selectedCategories.push(category);
+        }
       } else {
-        // 새로운 카테고리면 추가
-        state.selectedCategories.push(category);
+        // 선택 해제: 해당 카테고리 제거
+        state.selectedCategories = state.selectedCategories.filter((c) => c !== category);
       }
     },
     clearCategory: (state) => {
-      state.selectedCategory = null;
+      state.selectedCategories = [];
     },
   },
 });
