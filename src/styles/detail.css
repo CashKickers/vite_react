@@ -1,0 +1,119 @@
+@import "global.css";
+
+.detail-header {
+    display: flex;
+    align-items: center;
+}
+
+.detail-header-back-btn {
+    flex: 1;
+}
+
+.detail-header-basicinfo {
+    flex: 5;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.detail-header-name {
+    font-family: var(--font-SemiBold);
+    font-size: 25px;
+}
+
+.detail-header-address {
+    display: flex;
+    justify-content: start;
+
+    font-family: var(--font-Light);
+    font-size: 10px;
+}
+
+.detail-content {
+    overflow-y: auto;
+}
+
+.detail-content-images {
+    display: flex;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.detail-content-images-1 {
+    /* width: 65%; */
+    flex: 2;
+    padding-right: 10px;
+}
+
+.detail-content-images-2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.detail-sub-content-title {
+    font-family: var(--font-ExtraBold);
+    font-size: 20px;
+    text-align: start;
+}
+
+.detail-sub-content-descript {
+    font-family: var(--font-Light);
+    font-size: 10px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.detail-sub-content {
+    width: 100%;
+    padding: 13px 10px;
+    margin-bottom: 15px;
+
+    background-color: var(--bg-color2);
+    border-radius: 15px;
+}
+
+.detail-content-reviews-sum {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+
+    padding: 5px;
+    
+    width: 100%;
+    min-height: 20px;
+    
+    text-align: start;
+    
+    font-family: var(--font-Light);
+    font-size: 15px;
+}
+
+.detail-content-reviews-sum-content {
+    flex: 9;
+    padding-left: 15px;
+}
+
+.detail-review-category {
+    margin: 5px 0;
+    font-family: var(--font-SemiBold);
+    font-size: 16px;
+
+    display: flex;
+    align-items: center;
+}
+
+.graph-btn-active,
+.graph-btn-unactive {
+    margin: 0 10px; /* 양쪽에 10px의 여백 추가 */
+    cursor: pointer;
+    text-align: center;
+}
+
+.graph-btn-active {
+    color: black;
+}
+
+.graph-btn-unactive {
+    color: var(--gray1);
+}
