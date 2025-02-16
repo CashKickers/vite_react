@@ -28,16 +28,17 @@ import moodIcon from '../assets/mood.svg'
 import '../styles/global.css'
 import '../styles/detail.css'
 
-const Details = ( { id = null } ) => {
+const Details = ( ) => {
   const navigate = useNavigate();
   const location = useLocation(); 
   const { state } = location;
 
   // redux
   const selectedId = useAppSelector(state => state.restaurant.selectedRestaurantId); // 현재 선택 식당 아이디값
+  const previousId = useAppSelector(state => state.restaurant.previousRestaurantId); // 현재 선택 식당 아이디값
   const selectedCategories = useAppSelector((state) => state.review.selectedCategories);
 
-  const restaurantId = id !== null ? id : selectedId; // 선택된 식당 아이디
+  const restaurantId = selectedId !== null ? selectedId : previousId; // 선택된 식당 아이디
   const [isSelected, setIsSelected] = useState(false); // 선택된 식당이 my에 저장되어 있는지 확인
 
   // 식당 기본 정보
@@ -116,6 +117,8 @@ const Details = ( { id = null } ) => {
             setYMGraphDate(dates);
             setYMPositive(positives);
             setYMNegative(negatives);
+
+            if (dates.length === 0) setIsMonth(false)
         }
     } catch (error) {
         console.error('API 호출 중 오류 발생:', error);
@@ -205,10 +208,10 @@ const Details = ( { id = null } ) => {
     if (myInLocal) {
       try {
         const parsedList = JSON.parse(myInLocal);
-        console.log(parsedList, parsedList.includes(selectedId));
+        console.log(parsedList, parsedList.includes(restaurantId));
         
         // parsedList가 배열인 경우
-        if (Array.isArray(parsedList) && parsedList.includes(selectedId)) {
+        if (Array.isArray(parsedList) && parsedList.includes(restaurantId)) {
           console.log('change true!');
           setIsSelected(true);
         }
@@ -238,135 +241,150 @@ const Details = ( { id = null } ) => {
       minHeight: "100vh",
       backgroundColor: 'var(--bg-color)',
     }}>
-    <div style ={{
-      backgroundColor: 'var(--bg-color)',
-      width: "100%",
-      // height: "100%",
-      height: "auto",
-      padding: "20px 15px",
-    }}>
-      <div className="detail-header">
-        <div className="detail-header-btn" onClick={onClickBackBtn}>
-          <Image src={btnBackIcon} width="40px" />
-        </div>
-        <div className="detail-header-basicinfo">
-          <div className="detail-header-name">
-            {name}
+      {restaurantId !== null ? (
+        <div style ={{
+          backgroundColor: 'var(--bg-color)',
+          width: "100%",
+          // height: "100%",
+          height: "auto",
+          padding: "20px 15px",
+        }}>
+          <div className="detail-header">
+            <div className="detail-header-btn" onClick={onClickBackBtn}>
+              <Image src={btnBackIcon} width="40px" />
+            </div>
+            <div className="detail-header-basicinfo">
+              <div className="detail-header-name">
+                {name}
+              </div>
+              <div className="detail-header-address">
+                <Image src={addressIcon} width="13px" />
+                <span style={{paddingLeft: "2px"}}>{address}</span>
+              </div>
+            </div>
+            <div className="detail-header-btn">
+              <MyButton setState={isSelected} id={restaurantId} />
+            </div>
           </div>
-          <div className="detail-header-address">
-            <Image src={addressIcon} width="13px" />
-            <span style={{paddingLeft: "2px"}}>{address}</span>
-          </div>
-        </div>
-        <div className="detail-header-btn">
-          <MyButton setState={isSelected} id={restaurantId} />
-        </div>
-      </div>
-
-      <div className="detail-content">
-        <div className="detail-content-images">
-          <div className="detail-content-images-1">
-            <Image src={imageLinks[0]} fit='fill' />
-          </div>
-          <div className="detail-content-images-2">
-            <Image src={imageLinks[1]} fit='contain' />
-            <Image src={imageLinks[2]} fit='contain' />
-          </div>
-        </div>
-
-        {/* 리뷰 추세 그래프 */}
-        <div className="detail-sub-content-title">
-          리뷰 추세
-        </div>
-        <div className="detail-sub-content">
-          {/* 버튼 */}
-          <div style={{
-            display: "flex",
-          }}>
-            <div className={`graph-btn-${isMonth ? 'active':'unactive'}`} onClick={()=>setIsMonth(true)}>월간</div>
-            <div className={`graph-btn-${isMonth ? 'unactive':'active'}`} onClick={()=>setIsMonth(false)}>연간</div>
-          </div>
-          {/* 그래프 모듈 */}
-          <div className="detail-sub-content-descript"><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
-          <div className="detail-sub-content-descript">(단위: %)</div>
-          {
-            isMonth ? (
-              <MyCustomChart date={yMGraphDate} positive={yMPositive} negative={yMNegative} />
-            ) : (
-              <MyCustomChart date={yGraphDate} positive={yPositive} negative={yNegative} />
-            ) 
-          }
-        </div>
-
-        {/* 리뷰 요약 정보 */}
-        <div className="detail-sub-content-title">
-          AI 리뷰 요약
-        </div>
-        <div className="detail-sub-content-descript">* 사용자 리뷰 전체를 생성형 AI가 요약한 자료입니다</div>
-        <div className="detail-sub-content">
-          {reviewSums.length > 0 ? (
-            reviewSums.map((review) => (
-                <div className='detail-content-reviews-sum' key={review.type}>
-                    <Image src={review.icon} width={25} />
-                    <div className='detail-content-reviews-sum-content'>
-                        {review.content}
+  
+          <div className="detail-content">
+            <div className="detail-content-images">
+              <div className="detail-content-images-1">
+                <Image src={imageLinks[0]} fit='fill' />
+              </div>
+              <div className="detail-content-images-2">
+                <Image src={imageLinks[1]} fit='contain' />
+                <Image src={imageLinks[2]} fit='contain' />
+              </div>
+            </div>
+  
+            {/* 리뷰 추세 그래프 */}
+            <div className="detail-sub-content-title">
+              리뷰 추세
+            </div>
+            <div className="detail-sub-content">
+              {/* 버튼 */}
+              <div style={{
+                display: "flex",
+              }}>
+                {yMGraphDate.length > 0 && <div className={`graph-btn-${isMonth ? 'active':'unactive'}`} onClick={()=>setIsMonth(true)}>월간</div>}
+                {yGraphDate.length > 0 && <div className={`graph-btn-${isMonth ? 'unactive':'active'}`} onClick={()=>setIsMonth(false)}>연간</div>}
+              </div>
+              {/* 그래프 모듈 */}
+              {
+                isMonth ? ( yMGraphDate.length > 0 &&
+                  <>
+                    <div className="detail-sub-content-descript"><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
+                    <div className="detail-sub-content-descript">(단위: %)</div>
+                    <MyCustomChart date={yMGraphDate} positive={yMPositive} negative={yMNegative} />
+                  </>
+                ) : ( yGraphDate.length > 0 &&
+                  <>
+                    <div className="detail-sub-content-descript"><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
+                    <div className="detail-sub-content-descript">(단위: %)</div>
+                    <MyCustomChart date={yGraphDate} positive={yPositive} negative={yNegative} />
+                  </>
+                ) 
+              }
+              {
+                yMGraphDate.length === 0 && yGraphDate.length === 0 &&
+                <div style={{textAlign: "center", padding: "5px 10px"}}>리뷰 추세를 알 수 없습니다.</div>
+              }
+            </div>
+  
+            {/* 리뷰 요약 정보 */}
+            <div className="detail-sub-content-title">
+              AI 리뷰 요약
+            </div>
+            <div className="detail-sub-content-descript">* 사용자 리뷰 전체를 생성형 AI가 요약한 자료입니다</div>
+            <div className="detail-sub-content">
+              {reviewSums.length > 0 ? (
+                reviewSums.map((review) => (
+                    <div className='detail-content-reviews-sum' key={review.type}>
+                        <Image src={review.icon} width={25} />
+                        <div className='detail-content-reviews-sum-content'>
+                            {review.content}
+                        </div>
                     </div>
+                ))
+              ) : (
+                <div style={{textAlign: "center", padding: "5px 10px"}}>
+                  맛, 가격, 청결도, 고객응대, 분위기와 관련된 리뷰가 부족합니다.
                 </div>
-            ))
-          ) : (
-            <div style={{textAlign: "center", padding: "5px 10px"}}>
-              맛, 가격, 청결도, 고객응대, 분위기와 관련된 리뷰가 부족합니다.
+              )}
             </div>
-          )}
-        </div>
-
-        {/* 상세 리뷰 */}
-        <div className="detail-sub-content-title">
-          상세 리뷰
-        </div>
-        <div className="detail-content-reviews">
-          {/* 카테고리 나누기 */}
-          <div className="detail-review-category">
-            <div>카테고리</div>
-            {Object.entries(reviewCategories).map(([key, value]) => (
-              <Tag title={value.type} size="big" isCategory={true} selected={value.selected} key={key} />
-            ))}
+  
+            {/* 상세 리뷰 */}
+            <div className="detail-sub-content-title">
+              상세 리뷰
+            </div>
+            <div className="detail-content-reviews">
+              {/* 카테고리 나누기 */}
+              <div className="detail-review-category">
+                <div>카테고리</div>
+                {Object.entries(reviewCategories).map(([key, value]) => (
+                  <Tag title={value.type} size="big" isCategory={true} selected={value.selected} key={key} />
+                ))}
+              </div>
+              <hr style={{color: "#D6D6D6"}}/>
+              {/* 사용자 리뷰 리스트 출력 */}
+              {/* {reviews.length > 0 ? (
+                reviews.map(review => (
+                  <Review
+                    key={review.id}
+                    userName={review.user_code}
+                    tags={review.categories}
+                    content={review.contents}
+                    date={review.write_date}
+                  />
+                ))
+              ) : (
+                <div style={{textAlign: "center", padding: "5px 10px"}}>
+                  상세 리뷰가 없습니다.
+                </div>
+              )} */}
+              {filteredReviews.length > 0 ? (
+                filteredReviews.map(review => (
+                  <Review
+                    key={review.id}
+                    userName={review.user_code}
+                    tags={review.categories}
+                    content={review.contents}
+                    date={review.write_date}
+                  />
+                ))
+              ) : (
+                <div style={{ textAlign: "center", padding: "5px 10px" }}>
+                  선택된 카테고리에 해당하는 리뷰가 없습니다.
+                </div>
+              )}
+            </div>
           </div>
-          <hr style={{color: "#D6D6D6"}}/>
-          {/* 사용자 리뷰 리스트 출력 */}
-          {/* {reviews.length > 0 ? (
-            reviews.map(review => (
-              <Review
-                key={review.id}
-                userName={review.user_code}
-                tags={review.categories}
-                content={review.contents}
-                date={review.write_date}
-              />
-            ))
-          ) : (
-            <div style={{textAlign: "center", padding: "5px 10px"}}>
-              상세 리뷰가 없습니다.
-            </div>
-          )} */}
-          {filteredReviews.length > 0 ? (
-            filteredReviews.map(review => (
-              <Review
-                key={review.id}
-                userName={review.user_code}
-                tags={review.categories}
-                content={review.contents}
-                date={review.write_date}
-              />
-            ))
-          ) : (
-            <div style={{ textAlign: "center", padding: "5px 10px" }}>
-              선택된 카테고리에 해당하는 리뷰가 없습니다.
-            </div>
-          )}
         </div>
-      </div>
-    </div>
+      ) : (
+        <></>
+      )
+      }
     </div>
   )
 }

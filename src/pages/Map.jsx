@@ -18,7 +18,6 @@ import '../styles/global.css'
 
 const KakaoMap = ( ) => {
   const location = useLocation();
-  const { state } = location;
 
   // redux
   const dispatch = useAppDispatch();
@@ -152,16 +151,6 @@ const KakaoMap = ( ) => {
     dispatch(selectRestaurant(id));
     isMy(id);
   }
-
-  // useEffect(()=>{
-  //   if (state && state.modalOpen) {
-  //     setRestaurantId(selectedId)
-  //     isMy(selectedId)
-  //   }
-  // }, [])
-  
-  // setIsResearchBtnShow(ture) 할 로직 구현
-  // map-research-btn 클릭 시 로직 구현 -> api 불러서 마커 새로 뿌려야함 & setIsResearchBtnShow(false)
 
   const [searchValue, setSearchValue] = useState('');
 

@@ -15,12 +15,13 @@ const restaurantSlice = createSlice({
       state.previousRestaurantId = state.selectedRestaurantId;
       state.selectedRestaurantId = action.payload;
       localStorage.setItem('selectRestaurantId', state.selectedRestaurantId);
+      localStorage.setItem('prevRestaurantId', state.previousRestaurantId);
     },
     clearSelection: (state) => {
       state.previousRestaurantId = state.selectedRestaurantId;
       state.selectedRestaurantId = null;
-      localStorage.setItem('prevRestaurantId', state.selectedRestaurantId);
-      localStorage.setItem('selectRestaurantId', null);
+      localStorage.setItem('prevRestaurantId', state.previousRestaurantId);
+      localStorage.removeItem('selectRestaurantId');
     },
     // addFavorite: (state, action) => {
     //   if (!state.favoriteRestaurants.includes(action.payload)) {
