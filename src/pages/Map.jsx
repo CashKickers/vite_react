@@ -11,13 +11,19 @@ import markerDownIcon from '../assets/marker-down.svg'
 
 import { mapApi as fetchMapData } from '../api/map'
 
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { selectRestaurant, clearSelection } from "../store/restaurantSlice";
+
 import '../styles/global.css'
 
 const KakaoMap = ( ) => {
   const location = useLocation();
   const { state } = location;
 
-  const [result, setResult] = useState("")
+  // redux
+  const dispatch = useAppDispatch();
+  const selectedId = useAppSelector(state => state.selectedRestaurantId);
+
   const [center, setCenter] = useState({
     lat: 37.5696765,
     lng: 126.9768121,
@@ -26,9 +32,10 @@ const KakaoMap = ( ) => {
   const [map, setMap] = useState(null) // 지도 객체 저장
   const [bounds, setBounds] = useState(null) // 지도 영역 정보 저장
 
-  const [isModalOpen, setIsModalOpen] = useState(state?.modalOpen || false) // 식당 간략 정보 모달 오픈 유무
-  const [restaurantId, setRestaurantId] = useState(state?.modalId || null)
-  const [isRestaurantMy, setIsRestaurnatMy] = useState(false)
+  // const [isModalOpen, setIsModalOpen] = useState(state?.modalOpen || false) // 식당 간략 정보 모달 오픈 유무
+  const [isModalOpen, setIsModalOpen] = useState(false) // 식당 간략 정보 모달 오픈 유무
+  const [restaurantId, setRestaurantId] = useState(selectedId || null)
+  const [isRestaurantMy, setIsRestaurantMy] = useState(false);
 
   const [isResearchBtnShow, setIsResearchBtnShow] = useState(false) // 이 지역 재검색 버튼 show 유무
 
@@ -111,33 +118,47 @@ const KakaoMap = ( ) => {
     console.log(markers)
   }, [markers])
 
+  useEffect(()=> {
+    if (selectedId !== null) {
+      dispatch(clearSelection(selectedId));
+    }
+  }, [selectedId])
+
   // 식당 간략 정보 모달 관련 함수
   const onCloseModal = () => {
     setIsModalOpen(false)
     setRestaurantId(null)
-    setIsRestaurnatMy(null)
+    setIsRestaurantMy(null)
   }
-  const onClickMarker = (id) => {
-    setIsModalOpen(true)
-    setRestaurantId(id); // api 불러오는 것에 따라 다르게 설정
 
-    console.log("모달이 열렸을 때 id:", id, isRestaurantMy);
-    console.log("현재 localStorage my 값:", localStorage.getItem('my'));
-    
+  const isMy = (id) => {
     const myList = localStorage.getItem('my'); // 로컬스토리지에서 가져옴
     if (myList) {
         try {
             const parsedSet = new Set(JSON.parse(myList));
-            console.log(parsedSet);
-            console.log(parsedSet.has(id));
-            setIsRestaurnatMy(parsedSet.has(id)); // 수정: parsedSet.has(id)를 정확히 반영
+            setIsRestaurantMy(parsedSet.has(id)); // 수정: parsedSet.has(id)를 정확히 반영
         } catch (error) {
             console.error('Error parsing JSON from localStorage:', error);
         }
     } else {
-      setIsRestaurnatMy(false);
+      setIsRestaurantMy(false);
     }
   }
+
+  const onClickMarker = (id) => {
+    setIsModalOpen(true)
+    setRestaurantId(id); // api 불러오는 것에 따라 다르게 설정
+
+    dispatch(selectRestaurant(id));
+    isMy(id);
+  }
+
+  // useEffect(()=>{
+  //   if (state && state.modalOpen) {
+  //     setRestaurantId(selectedId)
+  //     isMy(selectedId)
+  //   }
+  // }, [])
   
   // setIsResearchBtnShow(ture) 할 로직 구현
   // map-research-btn 클릭 시 로직 구현 -> api 불러서 마커 새로 뿌려야함 & setIsResearchBtnShow(false)

@@ -6,12 +6,19 @@ import MyButton from '../components/MyButton';
 
 import { restaurantApi } from '../api/restaurant'
 
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { selectRestaurant } from "../store/restaurantSlice";
+
 import moreIcon from '../assets/more.svg'
 
 import '../styles/my.css'
 
 const MyPage = () => {
   const navigate = useNavigate();
+
+  // redux
+  const dispatch = useAppDispatch();
+  const selectedId = useAppSelector(state => state.selectedRestaurantId);
 
   // localstorage에 저장된 값 불러와서 처리하기
   const [myList, setMyList] = useState([]);
@@ -48,7 +55,8 @@ const MyPage = () => {
     if (myInLocal) {
       try {
         const parsedList = JSON.parse(myInLocal);
-        setMyList(parsedList);
+        const sortedList = parsedList.sort(); // 순서를 유지하기 위해 정렬
+        setMyList(sortedList);
       } catch (error) {
         console.error('Error parsing JSON from localStorage:', error);
       }
@@ -71,7 +79,8 @@ const MyPage = () => {
 
   // 상세 페이지 이동
   const onClickMore = ( id ) => {
-    if (navigate) navigate('/details', {state: { id: id, from: 'my'}})
+    dispatch(selectRestaurant(id));
+    if (navigate) navigate('/details', {state: {from: 'my'}})
   }
 
   return (

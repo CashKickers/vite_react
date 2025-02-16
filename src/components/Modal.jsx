@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, } from 'react-router-dom';
 
 import PropTypes from 'prop-types'
 import { Button, Image } from 'antd-mobile'
@@ -23,12 +23,10 @@ import moodIcon from '../assets/mood.svg'
 
 const Modal = ( { isOpen, onClose, id, my = null } ) => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const { state } = location;
 
     // 식당 기본 정보
     const [name, setName] = useState(null);
-    const [isMy, setIsMy] = useState((my !== null) ? my : (state && state.my));
+    const [isMy, setIsMy] = useState((my !== null) ? my : false); // 왜 제대로 저장이 되지 않는 것인가...
     const [address, setAddress] = useState(null);
     // 리뷰 변화
     const [month, setMonth] = useState(0);
@@ -85,15 +83,11 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
 
     // 자세히보기 버튼 클릭 시 디테일 페이지로 이동
     const onClick = () => {
-        if (navigate) navigate('/details', {state: {from: 'map', my: my, id: id}})
+        if (navigate) navigate('/details', {state: {from: 'map', }})
     }
 
     useEffect(()=> {
-        setIsMy((my !== null) ? my : (state && state.my))
-        console.log("Modal: ", my, (state && state.my), (my !== null) ? my : (state && state.my), isMy);
-    }, [my, state, isMy]);
-
-    useEffect(()=> {
+        console.log(id, my, isMy)
         if (isOpen) {
             loadRestaurant();
             loadReviewSummary();
@@ -106,6 +100,43 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
         }
     }, [isOpen])
 
+    // useEffect(() => {
+    //     if (isOpen) {
+    //         const myList = localStorage.getItem('my');
+    //         if (myList) {
+    //             try {
+    //                 const parsedSet = new Set(JSON.parse(myList));
+    //                 setIsMy(parsedSet.has(id)); 
+    //             } catch (error) {
+    //                 console.error('Error parsing JSON from localStorage:', error);
+    //             }
+    //         } else {
+    //             setIsMy(false);
+    //         }
+    //     }
+    // }, [isOpen, id]);
+
+    useEffect(() => {
+        if (isOpen) {
+            if (my !== null) {
+                setIsMy(my); // my 값이 있으면 우선 적용
+            } else {
+                const myList = localStorage.getItem('my');
+                if (myList) {
+                    try {
+                        const parsedSet = new Set(JSON.parse(myList));
+                        setIsMy(parsedSet.has(id));
+                    } catch (error) {
+                        console.error('Error parsing JSON from localStorage:', error);
+                    }
+                } else {
+                    setIsMy(false);
+                }
+            }
+        }
+    }, [isOpen, id, my]);
+    
+
     return (
         <>
         {
@@ -116,8 +147,9 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         <div className="modal-header-info">
                             <div className="modal-header-name">
                                 <div style={{paddingRight: "7px"}}>{name}</div>
-                                {/* <MyButton setState={my} id={id} /> */}
                                 <MyButton setState={isMy} id={id} />
+                                {/* <MyButton setState={setIsMy} id={id} /> */}
+
                             </div>
                             <Image src={modalCloseIcon} width="50px" onClick={onClose} />
                         </div>
@@ -145,14 +177,14 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         <div className='modal-info'>* 생성형 AI가 요약한 리뷰입니다.</div>
                         <div className="modal-content">
                         {reviewSums.length > 0 ? (
-                            reviewSums.map((type, icon, content) => {
-                                <div className='modal-review-sum' key={type}>
-                                    <Image src={icon} width={15} />
+                            reviewSums.map((review) => (
+                                <div className='modal-review-sum' key={review.type}>
+                                    <Image src={review.icon} width={15} />
                                     <span>
-                                        {content}
+                                        {review.content}
                                     </span>
                                 </div>
-                            })
+                            ))
                         ) : (
                             <div style={{textAlign: "center", padding: "5px 10px"}}>
                                 맛, 가격, 청결도, 고객응대, 분위기와 관련된 리뷰가 부족합니다.

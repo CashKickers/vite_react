@@ -12,6 +12,8 @@ import { restaurantApi } from '../api/restaurant'
 import { reviewSummaryApi } from '../api/reviewSummary'
 import { reviewsApi } from '../api/reviews'
 
+import { useAppSelector } from "../store/hooks";
+
 import btnBackIcon from '../assets/btn-back.svg'
 import addressIcon from '../assets/address.svg'
 import flavorIcon from '../assets/flavor.svg'
@@ -26,9 +28,13 @@ import '../styles/detail.css'
 const Details = ( { id = null } ) => {
   const navigate = useNavigate();
   const location = useLocation(); 
-  const { state } = location; // state?.id 가 있더라 id가 있어야 함
+  const { state } = location;
 
-  const restaurantId = id !== null ? id : state?.id
+  // redux
+  const selectedId = useAppSelector(state => state.restaurant.selectedRestaurantId); // 현재 선택 식당 아이디값
+
+  const restaurantId = id !== null ? id : selectedId; // 선택된 식당 아이디
+  const [isSelected, setIsSelected] = useState(false); // 선택된 식당이 my에 저장되어 있는지 확인
 
   // 식당 기본 정보
   const [name, setName] = useState(null);
@@ -61,7 +67,7 @@ const Details = ( { id = null } ) => {
     if (state === null)
       navigate('/map')
     else if (state.from == 'map')
-      navigate('/map', {state: {modalOpen: true, modalId: id, my: state?.my || false}})
+      navigate('/map', {state: {modalOpen: true}})
     else if (state.from == 'my')
       navigate('/my')
   }
@@ -133,10 +139,28 @@ const Details = ( { id = null } ) => {
   }
 
   useEffect(()=> {
-    console.log(restaurantId)
     loadRestaurant()
     loadReviewSummary()
     loadReviews()
+  }, [])
+
+  // 로컬 스토리지에 있는 값 들고오기
+  useEffect(() => {
+    const myInLocal = localStorage.getItem('my');
+    if (myInLocal) {
+      try {
+        const parsedList = JSON.parse(myInLocal);
+        console.log(parsedList, parsedList.includes(selectedId));
+        
+        // parsedList가 배열인 경우
+        if (Array.isArray(parsedList) && parsedList.includes(selectedId)) {
+          console.log('change true!');
+          setIsSelected(true);
+        }
+      } catch (error) {
+        console.error('Error parsing JSON from localStorage:', error);
+      }
+    }
   }, [])
 
   return (
@@ -165,8 +189,7 @@ const Details = ( { id = null } ) => {
           </div>
         </div>
         <div className="detail-header-btn">
-          {/* my 상태에 따라 true/false 값 수정 */}
-          <MyButton setState={state?.my || false} /> 
+          <MyButton setState={isSelected} id={restaurantId} />
         </div>
       </div>
 
