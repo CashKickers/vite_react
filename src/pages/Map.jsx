@@ -163,9 +163,21 @@ const KakaoMap = ( ) => {
   // setIsResearchBtnShow(ture) 할 로직 구현
   // map-research-btn 클릭 시 로직 구현 -> api 불러서 마커 새로 뿌려야함 & setIsResearchBtnShow(false)
 
+  const [searchValue, setSearchValue] = useState('');
+
+  const handlePressEnter = () => {
+    alert('추후 구현 예정')
+    setSearchValue('')
+  };
+
   return (
     <div className="map-container">
-      <Input className="map-search" placeholder="식당명 검색" />
+      <Input className="map-search" placeholder="식당명 검색" 
+      
+      value={searchValue}
+      onChange={(value) => setSearchValue(value)}
+      onEnterPress={handlePressEnter} // Enter 키를 눌렀을 때 이벤트 핸들러
+      />
       {
         isResearchBtnShow ? (
           <Button
