@@ -1,7 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
+import restaurantReducer from "./restaurantSlice";
+import reviewReducer from "./reviewSlice";
 
 export const store = configureStore({
   reducer: {
-    // 여기에 리듀서들을 추가하세요
+    restaurant: restaurantReducer,
+    review: reviewReducer,
   },
 }) 
