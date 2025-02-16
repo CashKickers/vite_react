@@ -289,7 +289,13 @@ const Details = ( { id = null } ) => {
           {/* 그래프 모듈 */}
           <div className="detail-sub-content-descript"><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
           <div className="detail-sub-content-descript">(단위: %)</div>
-          <MyCustomChart date={isMonth ? yMGraphDate : yGraphDate} positive={isMonth ? yMPositive : yPositive} negative={isMonth ? yMNegative : yNegative} />
+          {
+            isMonth ? (
+              <MyCustomChart date={yMGraphDate} positive={yMPositive} negative={yMNegative} />
+            ) : (
+              <MyCustomChart date={yGraphDate} positive={yPositive} negative={yNegative} />
+            ) 
+          }
         </div>
 
         {/* 리뷰 요약 정보 */}

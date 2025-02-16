@@ -28,8 +28,9 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
 
     // 식당 기본 정보
     const [name, setName] = useState(null);
-    const [isMy, setIsMy] = useState((my !== null) ? my : false); // 왜 제대로 저장이 되지 않는 것인가...
+    const [isMy, setIsMy] = useState((my !== null) ? my : false);
     const [address, setAddress] = useState(null);
+    const [state, setState] = useState({});
     // 리뷰 변화
     const [graphDate, setGraphDate] = useState([]);
     const [positive, setPositive] = useState([]);
@@ -46,6 +47,46 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
     // 이미지
     const [imageLinks, setImageLinks] = useState([]);
 
+    const stateDescription = ( id ) => {
+        switch (id) {
+            case 1: 
+                return {
+                    all: "최근 리뷰는 긍정적으로 변화하고 있어요",
+                    first: "최근 리뷰는 ",
+                    second: "긍정적",
+                    third: "으로 변화하고 있어요",
+                }
+            case 2: 
+                return {
+                    all: "지난 한달의 리뷰가 긍정적이예요",
+                    first: "지난 한달의 리뷰가 ",
+                    second: "긍정적",
+                    third: "이예요",
+                }
+            case 3: 
+                return {
+                    all: "최근 리뷰는 평이한 추세를 보여요",
+                    first: "최근 리뷰는 ",
+                    second: "평이",
+                    third: "한 추세를 보여요",
+                }
+            case 4: 
+                return {
+                    all: "최근 리뷰는 부정적으로 변화하고 있어요",
+                    first: "최근 리뷰는 ",
+                    second: "부정적",
+                    third: "으로 변화하고 있어요",
+                }
+            case 5: 
+                return {
+                    all: "지난 한달의 리뷰가 부정적이예요",
+                    first: "지난 한달의 리뷰가 ",
+                    second: "부정적",
+                    third: "이예요",
+                }
+        }
+    }
+
     // api
     // - 식당 정보
     const loadRestaurant = async () => {
@@ -57,6 +98,7 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                 setName(data.name);
                 setAddress(data.address);
                 setImageLinks(data.images);
+                setState(stateDescription(data.state_id));
             }
         } catch (error) {
             console.error('API 호출 중 오류 발생:', error);
@@ -186,12 +228,15 @@ const Modal = ( { isOpen, onClose, id, my = null } ) => {
                         {/* 그래프 */}
                         <div className="modal-content">
                                 {/* 그래프 */}
-                                <div><span style={{color:"#EDC55B"}}>ㅡ</span> 긍정 <span style={{color:"black"}}>ㅡ</span> 부정</div>
-                                <div>(단위: %)</div>
-                                <MyCustomChart date={graphDate} positive={positive} negative={negative}/>
+                                {graphDate.length > 0 ? (
+                                    <MyCustomChart date={graphDate} positive={positive} negative={negative}/>
+                                ): (
+                                    <></>
+                                )
+                                }
                                 {/* 멘트 */}
                                 <div>
-                                    점점 <span className="bold">긍정적</span>으로 변하고 있어요!
+                                    {state.first}<span className="bold">{state.second}</span>{state.third}
                                 </div>
                         </div>
 
